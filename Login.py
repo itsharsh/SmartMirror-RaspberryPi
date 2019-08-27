@@ -73,7 +73,7 @@ class ScreenSaver(Frame):
         self.msg = Label(self, font=('Helvetica', 20), fg="white", bg="black")
         self.msg.pack()
         self.time()
-        self.after(100,self.recognize)
+        self.after(2000,self.recognize)
         
     def time(self):
         self.string=strftime('%H:%M:%S')
