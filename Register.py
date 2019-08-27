@@ -4,7 +4,7 @@ import cv2
 import sys
 import PIL.Image
 import numpy as np
-
+import subprocess
 from tkinter import *
 from PIL import Image, ImageTk
 
@@ -14,20 +14,22 @@ dbpath = "data/db.csv"
 
 window=Tk()
 window.title("Smart Mirror")
-
+window.geometry("400x400")
 window.configure(background = 'black')
 
+labelX=25
+textfieldX=130
 #Name Input
-button1 = Label(window, text="Enter Name", width=25, height=3, fg='white', bg='black',font=('adobe_pi_std', 15))
-button1.place(x=120,y=200)
-b1 = Entry(window, width=30, bg='black', fg="white", font=('adobe_pi_std', 10))
-b1.place(x=360,y=227)
+nameLabel = Label(window, text="Enter Name", fg='white', bg='black',font=('adobe_pi_std', 12))
+nameLabel.place(x=labelX,y=50)
+nameTextfield = Entry(window, width=20, bg='black', fg="white", font=('adobe_pi_std', 10))
+nameTextfield.place(x=textfieldX,y=50)
 
 #Mail Input
-button2 = Label(window, text="Enter Email", width=25, height=3, fg='white', bg='black',font=('adobe_pi_std', 15))
-button2.place(x=120,y=250)
-b2 = Entry(window, width=30, bg='black', fg="white", font=('adobe_pi_std', 10))
-b2.place(x=360,y=277)
+emailLabel = Label(window, text="Enter Email", fg='white', bg='black',font=('adobe_pi_std', 12))
+emailLabel.place(x=labelX,y=100)
+emailTextfield = Entry(window, width=20, bg='black', fg="white", font=('adobe_pi_std', 10))
+emailTextfield.place(x=textfieldX,y=100)
 
 
 #Creating CSV File - Face ID, Email, Name
@@ -40,7 +42,7 @@ def writeData():
             for ids in reader:
                 e_id=ids[1]
                 totalrec+=1;
-                if(e_id==b2.get()):
+                if(e_id==emailTextfield.get()):
                     checkDuplicate=1
                 else:
                     checkDuplicate=0
@@ -48,13 +50,13 @@ def writeData():
             if(checkDuplicate==1):
                 msg=Label(window, text='User exists')
                 msg.config(bg='black',fg='white', font=('helvetica',10))
-                msg.place(x=890,y=250)
+                msg.place(x=labelX,y=300)
                 window.after(2000,msg.destroy)
                 f.close()
             else:
                 with open(dbpath, 'a', newline='') as csvFile:
                     writer = csv.writer(csvFile)
-                    writer.writerow([totalrec+1,b2.get(),b1.get()])
+                    writer.writerow([totalrec+1,emailTextfield.get(),nameTextfield.get()])
                     csvFile.close()
                     
                 Dataset(totalrec+1)
@@ -68,8 +70,8 @@ def writeData():
 #DATASET_CREATOR
 def Dataset(faceID):
 
-    name=b2.get()
-    faceCascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+    name=emailTextfield.get()
+    faceCascade = cv2.CascadeClassifier('recognizer/haarcascade_frontalface_default.xml')
     video_capture = cv2.VideoCapture(0)	
 
     entrynumber=0
@@ -96,15 +98,12 @@ def Dataset(faceID):
         if(entrynumber>24):
             msg1=Label(window, text='Face Registered Succesfully')
             msg1.config(bg='black',fg='white', font=('adobe_pi_std',15))
-            msg1.place(x=550, y=570)
-            window.after(5000,msg1.destroy)
+            msg1.place(x=labelX, y=300)
+            window.after(5000,msg1.destroy)            
             break
 
             breakvideo_capture.release()
     cv2.destroyAllWindows()
-
-
-
 
 def getImagesWithID(path):
     imagePaths=[os.path.join(path,f) for f in os.listdir(path)]
@@ -120,17 +119,14 @@ def getImagesWithID(path):
 
 
 def trainer(Face_ID):
-    recognizer=cv2.face.LBPHFaceRecognizer_create();
+    recognizer=cv2.face.createLBPHFaceRecognizer();
     Ids,faces=getImagesWithID(path)
     recognizer.train(faces, np.array(Ids))
     recognizer.save('recognizer/trainingData.yml')
+    #subprocess.getstatusoutput('rm datasets/*')
     cv2.destroyAllWindows()
-
-
 
 
 #Register Button
 register = Button(window, text="Register", command=writeData ,fg="white"  ,bg="black"  ,width=20  ,height=3,font=('adobe_pi_std', 15))
-register.place(x=560, y=350)
-
-
+register.place(x=labelX+50, y=150)

@@ -8,25 +8,16 @@ import locale
 import requests
 import threading
 import traceback
-import matplotlib
 import speech_recognition as sr
-import subprocess
-import Main
-
 
 from subprocess import call
 from tkinter import *
 from io import BytesIO
+from pygame import mixer
 from PIL import Image, ImageTk
 from contextlib import contextmanager
-from matplotlib import style
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from time import strftime
 from gtts import gTTS
-from pygame import mixer
-from subprocess import call
-from Main import *
 
 dbpath = "data/db.csv"
 loginpath = "data/loginstatus.csv"
@@ -37,7 +28,7 @@ class FullscreenWindow:
     def __init__(self):
         self.tk = Tk()
         self.tk.configure(background='black')
-        self.tk.attributes("-fullscreen", True)
+        self.tk.attributes("-fullscreen", False)
         self.Frame = Frame(self.tk, background = 'black')
         self.Frame.pack(anchor='center')
 
@@ -70,32 +61,7 @@ class VoiceAssistant:
         self.tts.save(self.filename)
         mixer.init()
         mixer.music.load(self.filename)
-        mixer.music.play()
-
-    def myCommand(self):
-        self.r=sr.Recognizer()
-        with sr.Microphone() as source:
-            print('Listening ')
-            self.r.pause_threshold = 1
-            self.r.adjust_for_ambient_noise(source, duration = 1)
-            self.audio = self.r.listen(source)
-            
-        try:
-            self.command = self.r.recognize_google(self.audio)        
-              
-        except sr.UnknownValueError:
-            self.assistant(self.myCommand())
-            
-        except Exception as e:
-            print(e)
-            self.talkToMe('Got Error' + e)
-            
-        else:
-            print('You said: '+ self.command + '\n')
-            return self.command
-
-
-
+        mixer.music.play()    
                 
 class ScreenSaver(Frame):
 
@@ -108,7 +74,6 @@ class ScreenSaver(Frame):
         self.msg.pack()
         self.time()
         self.after(100,self.recognize)
-        self.after(5000,self.kill)
         
     def time(self):
         self.string=strftime('%H:%M:%S')
@@ -116,11 +81,11 @@ class ScreenSaver(Frame):
         self.lbl.after(1000,self.time)
 
     def recognize(self):
-        faceCascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+        faceCascade = cv2.CascadeClassifier('recognizer/haarcascade_frontalface_default.xml')
         video_capture = cv2.VideoCapture(0)	
 
-        rec = cv2.face.LBPHFaceRecognizer_create()
-        rec.read("recognizer/trainingData.yml")
+        rec = cv2.face.createLBPHFaceRecognizer()
+        rec.load("recognizer/trainingData.yml")
         id=0
         
         loopcheck=True
@@ -151,16 +116,8 @@ class ScreenSaver(Frame):
                     
                     print ("Face Matched "+str(id))
                     loopcheck=False
-                    self.talkToMe(text='Welcome to your SmartMirror '+str(name)+" ("+str(email)+")")
-                    Main.main()
-                    
-
-    def kill(self):
-        exit()
+                    VoiceAssistant().talkToMe(audio="Welcome to Smart Mirror "+str(name))          
         
-
-
 if __name__ == '__main__':
     FullscreenWindow().tk.mainloop
-    
-    
+      
