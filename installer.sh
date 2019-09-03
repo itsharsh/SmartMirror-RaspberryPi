@@ -1,7 +1,7 @@
 #!/bin/bash
-sudo mkdir datasets
-sudo mkdir tempaudio
-sudo mkdir data
+mkdir datasets
+mkdir tempaudio
+mkdir data
 sudo apt autoremove -y
 sudo apt update -y
 sudo apt-get update -y
