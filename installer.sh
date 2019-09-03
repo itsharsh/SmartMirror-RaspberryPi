@@ -16,7 +16,7 @@ sudo apt-get install libqtwebkit4 libqt4-test -y
 sudo apt install libjasper1 -y
 sudo apt-get install libatlas-base-dev -y
 sudo apt-get install python3-opencv -y
-
+sudo apt-get install libatlas-base-dev -y
 sudo apt install virtualenv python3-virtualenv -y
 
 sudo pip3 install -r requirements.txt
