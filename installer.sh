@@ -2,13 +2,16 @@
 mkdir datasets
 mkdir tempaudio
 mkdir data
+sudo apt autoremove -y
 sudo apt-get update -y
+sudo apt update -y
 sudo apt-get upgrade -y
 sudo apt-get dist-upgrade -y
-sudo apt-get install python3
-sudo apt-get -y install python3-pip
+sudo apt-get install python3 -y
+sudo apt-get -y install python3-dev python3-pip
 sudo pip3 install -r requirements.txt
-sudo apt-get install python-matplotlib
-sudo apt-get install python3-pyaudio
-sudo pip3 install opencv-python
-sudo pip3 install opencv-contrib-python
+sudo apt-get install python-matplotlib -y
+sudo apt-get install python3-pyaudio -y
+sudo apt-get install libhdf5-dev libhdf5-serial-dev -y
+sudo apt-get install libqtwebkit4 libqt4-test -y
+sudo apt-get install python3-opencv -y
