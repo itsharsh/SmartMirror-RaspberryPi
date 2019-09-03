@@ -50,8 +50,8 @@ map_api="AIzaSyCpqHGLPWICwabnoIg5_78gpsks6o8TSu4"
 map_resolution="250x450"
 map_type="roadmap"
 zoom=14
-latitude = 28.582668
-longitude = 77.3143
+latitude = None
+longitude = None
 
 ui_locale = '' # e.g. 'fr_FR' fro French, '' as default
 time_format = 24 # 12 or 24

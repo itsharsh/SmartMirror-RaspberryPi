@@ -14,7 +14,7 @@ dbpath = "data/db.csv"
 
 window=Tk()
 window.title("Smart Mirror")
-window.geometry("400x400")
+window.geometry("600x600")
 window.configure(background = 'black')
 
 labelX=25
