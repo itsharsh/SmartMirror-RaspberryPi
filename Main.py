@@ -21,6 +21,8 @@ from gtts import gTTS
 from pygame import mixer
 import speech_recognition as sr
 import subprocess
+import time
+import sys
 
 loginpath = "data/loginstatus.csv"
 
@@ -176,7 +178,7 @@ class Weather(Frame):
                     image = image.resize((100, 100), Image.ANTIALIAS)
                     image = image.convert('RGB')
                     photo = ImageTk.PhotoImage(image)
-
+                    
                     self.iconLbl.config(image=photo)
                     self.iconLbl.image = photo
             else:
@@ -253,30 +255,35 @@ class HeartRateChart(Frame):
 class GPS(Frame):
     def __init__(self, parent):
         Frame.__init__(self, parent, bg='black')
-        self.image = None
-        self.image_label = Label(self, image=self.image)
-        self.image_label.pack(side = BOTTOM)
         self.getGPS()
-        
+        '''     img_response = requests.get("https://maps.googleapis.com/maps/api/staticmap?format=jpg&zoom="+str(zoom)+"&size="+map_resolution+"&key="+map_api+"&maptype="+map_type+"&scale:2&markers=size:mid|color:red|"+str(latitude)+","+str(longitude))
+        img1 = ImageTk.PhotoImage(Image.open(BytesIO(img_response.content)))
+        self.image_label=Label(self,image=img1)
+        self.image_label.image=img1
+        self.image_label.pack(side = BOTTOM)      
+        '''        
     def getGPS(self):
         gpsResponse = requests.post(url=api+gpsApi).text
         gpsParsed = json.loads(gpsResponse)
         global latitude, longitude
         latitude = gpsParsed[len(gpsParsed)-1]['fields']['latitude']
         longitude = gpsParsed[len(gpsParsed)-1]['fields']['longitude']
-        img_response = requests.get("https://maps.googleapis.com/maps/api/staticmap?format=jpg&zoom="+str(zoom)+"&size="+map_resolution+"&key="+map_api+"&maptype="+map_type+"&scale:2&markers=size:mid|color:red|"+str(latitude)+","+str(longitude))
-        im=Image.open(BytesIO(img_response.content))
-        self.image = ImageTk.PhotoImage(im)
-        self.image_label.configure(image = self.image)
-        self.image_label.after(60000, self.getGPS)
-
-  
-        
+        '''     img_response = requests.get("https://maps.googleapis.com/maps/api/staticmap?format=jpg&zoom="+str(zoom)+"&size="+map_resolution+"&key="+map_api+"&maptype="+map_type+"&scale:2&markers=size:mid|color:red|"+str(latitude)+","+str(longitude))
+        print("0")
+        img = ImageTk.PhotoImage(Image.open(BytesIO(img_response.content)))
+        print("1")
+        self.image_label.configure(image=img)
+        print("2")
+        self.image_label.image=img
+        print("2end")
+        #image_label.after(60000, self.getGPS)  
+        '''
 class FullscreenWindow2:
     def __init__(self):
         self.tk = Tk()
+        self.tk.geometry("1360x768")
         self.tk.configure(background='black')
-        self.tk.attributes("-fullscreen", False)
+        self.tk.attributes("-fullscreen", True)
         self.topFrame = Frame(self.tk, background = 'black')
         self.bottomFrame = Frame(self.tk, background = 'black')
         self.centerFrame = Frame(self.tk, background = 'black')
@@ -285,7 +292,7 @@ class FullscreenWindow2:
         self.centerFrame.pack(side = BOTTOM, fill = BOTH, expand = YES)
         self.state = False
         self.tk.bind("<Return>", self.toggle_fullscreen)
-        self.tk.bind("<Escape>", self.end_fullscreen)
+        self.tk.bind("<Escape>", self.end_fullscreen)        
 
         #FaceID
         global email
@@ -318,13 +325,32 @@ class FullscreenWindow2:
         self.heartrate_chart.pack(side = TOP, anchor=SE, padx=50, pady=100)
 
         #Voice Asst Thread
-        t2 = threading.Thread(target=VoiceAssistant().runVoiceCommand)
-        t2.start()
+        self.t1 = threading.Thread(target=VoiceAssistant().runVoiceCommand)        
+        self.t1.deamon=True
+        self.t1.start()
+        
+        #self.tk.after(20000,self.killtk)
 
 
         # BLANK SPACE
         # self.blankspace1 = Frame(self.topFrame)
         # self.blankspace1.pack(side=LEFT, anchor=N, padx=125, pady=125)
+    def changet1status(self):
+        self.killtk
+    
+    def killtk(self):
+        print("kill1")
+        print("0")
+        self.t1.deamon=True
+        print("1")
+        self.t1.join()  
+        print("2")
+        self.tk.destroy()
+        print("3")
+        sys.exit()
+              
+        
+        print("kill2")
 
     def toggle_fullscreen(self, event=None):
         self.state = not self.state  #Just toggling the boolean
@@ -365,8 +391,7 @@ class VoiceAssistant:
             self.assistant(self.myCommand())
             
         except Exception as e:
-            print(e)
-            #self.talkToMe('Got Error' + e)
+            print(e)            
             
         else:
             print('You said: '+ self.command + '\n')

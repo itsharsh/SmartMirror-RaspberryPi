@@ -1,8 +1,6 @@
-sudo apt-get install python-matplotlib
-sudo apt-get install python3-pyaudio
 
-sudo pip3 install opencv-python
-sudo pip3 install opencv-contrib-python
+
+
 
 
 https://www.pyimagesearch.com/2017/09/04/raspbian-stretch-install-opencv-3-python-on-your-raspberry-pi/

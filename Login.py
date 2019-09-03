@@ -9,6 +9,7 @@ import requests
 import threading
 import traceback
 import speech_recognition as sr
+import Main
 
 from subprocess import call
 from tkinter import *
@@ -27,12 +28,13 @@ class FullscreenWindow:
     
     def __init__(self):
         self.tk = Tk()
+        self.tk.geometry("1360x768")
         self.tk.configure(background='black')
-        self.tk.attributes("-fullscreen", False)
+        self.tk.attributes("-fullscreen", True)
         self.Frame = Frame(self.tk, background = 'black')
         self.Frame.pack(anchor='center')
 
-        self.state = False
+        self.state = True
         self.tk.bind("<Return>", self.toggle_fullscreen)
         self.tk.bind("<Escape>", self.end_fullscreen)
         
@@ -55,7 +57,7 @@ class VoiceAssistant:
         pass    
         
     def talkToMe(self, audio):
-        self.filename='audio.mp3'
+        self.filename='tempaudio/audio.mp3'
         print(audio)
         self.tts = gTTS(text=audio, lang='en')
         self.tts.save(self.filename)
@@ -73,6 +75,10 @@ class ScreenSaver(Frame):
         self.msg = Label(self, font=('Helvetica', 20), fg="white", bg="black")
         self.msg.pack()
         self.time()
+        with open (loginpath,'w') as f2:
+            writer = csv.writer(f2)
+            writer.writerow([0,"",""])
+            f2.close()
         self.after(2000,self.recognize)
         
     def time(self):
@@ -116,7 +122,8 @@ class ScreenSaver(Frame):
                     
                     print ("Face Matched "+str(id))
                     loopcheck=False
-                    VoiceAssistant().talkToMe(audio="Welcome to Smart Mirror "+str(name))          
+                    VoiceAssistant().talkToMe(audio="Welcome to Smart Mirror "+str(name))
+                    Main.FullscreenWindow2().tk.mainloop
         
 if __name__ == '__main__':
     FullscreenWindow().tk.mainloop
