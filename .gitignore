@@ -1,3 +1,5 @@
 datasets/
 tempaudio/
 data/
+__pycache__/
+datasets/
